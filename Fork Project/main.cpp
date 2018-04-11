@@ -66,29 +66,30 @@ int main() {
     //Variable to know when the child process has terminated
     int status;
     if(childPID > 0) {
+      //Print the child process for easy killing
+      cout << childPID << endl;
       //The Parent's process, wait until child has terminated
       wait(&status);
       //Resets the childPID variable once it is done
       childPID = 0;
     } else if(childPID == 0) {
-      //The child's process, first check if the string exists
-      bool stringExists = textMap.count(targetString) > 0;
-      //Must be printed before every attempt
-      cout << "." << endl;
-      if(stringExists) {
-        //Set the text map to the same one as parent's
-        int occurenceCount = swapMapKey(targetString, replaceString);
-        cout << "String has appeared : " << occurenceCount << " times\n";
-
-        //Display the new paragraph
-        displayParagraph(fileWordCount);
-      } else {
         while(true) {
-          cout << getpid() << endl;
+        //The child's process, first check if the string exists
+        bool stringExists = textMap.count(targetString) > 0;
+        //Must be printed before every attempt
+        cout << "." << endl;
+        if(stringExists) {
+          //Set the text map to the same one as parent's
+          int occurenceCount = swapMapKey(targetString, replaceString);
+          cout << "String has appeared : " << occurenceCount << " times\n";
+
+          //Display the new paragraph
+          displayParagraph(fileWordCount);
+          cout << "Child Terminating" << endl;
+          break;
+          }
         }
       }
-      cout << "Child Terminating" << endl;
-      break;
     }
   }
 
@@ -174,3 +175,5 @@ void displayParagraph(unsigned int fileWordCount) {
   }
   cout << endl;
 }
+
+//End of Program
