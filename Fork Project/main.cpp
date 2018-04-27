@@ -1,3 +1,14 @@
+//Daniel Kim
+//main.cpp
+/* Project Description
+A program that spawns a child process to perform a string replacement function
+on a paragraph pre-instantiated by the parent.  The child does not modify the
+parent's paragraph, but it's own copy.  There is an intentional bug in this
+program which forces the child process to enter an infinite loop if the
+target string does not exist in the given paragraph.  The user is then
+forced to turn the program off using a separate command terminal
+*/
+
 //Import class that needs to run the program
 #include <iostream>
 #include <sys/types.h>
@@ -19,12 +30,21 @@
 using namespace std;
 
 //Define constant variables
+//----------------------------------------------------------------------------
+//The name of the input text file containing the paragraph
 const char *TEXT_FILE = "input.txt";
+//The name of the command that the user has to input in order to shut down
+//the parent program
 const string TERMINATE_COMMAND("!wq");
+//----------------------------------------------------------------------------
 
 //Global variables
+//----------------------------------------------------------------------------
+//A map used to hold a list of unique Strings existing in the paragraph
 map< string, vector<int> > textMap;
+//A set of unique Strings used as keys for the above map
 unordered_set<string> textSet;
+//----------------------------------------------------------------------------
 
 //Forward declare methods
 int storeFileItems();
@@ -73,30 +93,34 @@ int main() {
       //Resets the childPID variable once it is done
       childPID = 0;
     } else if(childPID == 0) {
+        //If the target String does not exist in the paragaph, this will be an
+        //infinite loop
         while(true) {
-        //The child's process, first check if the string exists
-        bool stringExists = textMap.count(targetString) > 0;
-        //Must be printed before every attempt
-        cout << "." << endl;
-        if(stringExists) {
-          //Set the text map to the same one as parent's
-          int occurenceCount = swapMapKey(targetString, replaceString);
-          cout << "String has appeared : " << occurenceCount << " times\n";
+          //The child's process, first check if the string exists
+          bool stringExists = textMap.count(targetString) > 0;
+          //Must be printed before every attempt
+          cout << "." << endl;
+          if(stringExists) {
+            //Set the text map to the same one as parent's
+            int occurenceCount = swapMapKey(targetString, replaceString);
+            cout << "String has appeared : " << occurenceCount << " times\n";
 
-          //Display the new paragraph
-          displayParagraph(fileWordCount);
-          cout << "Child Terminating" << endl;
-          break;
+            //Display the new paragraph
+            displayParagraph(fileWordCount);
+            cout << "Child Terminating" << endl;
+            return 0;
           }
         }
       }
     }
-  }
-
   return 0;
 }
 
-//Displays the contents of the file items and returns the word count
+/*
+  Displays the contents of the file items
+
+  @Return: The word count of the entire paragraph
+*/
 int storeFileItems() {
   //Initialize and create the object that holds the file
   ifstream textFile(TEXT_FILE);
@@ -104,7 +128,8 @@ int storeFileItems() {
   //The file could not be read from, output an error
   if(!textFile) {
     cerr << "File could not be read fro118Ma7ur3!!m \n";
-  }  //Initialize array list to keep hold of all the positions of the current word
+  }
+  //Initialize array list to keep hold of all the positions of the current word
   vector<int> wordArrayList;
 
   //Initialize string variable to store the current word
@@ -139,8 +164,15 @@ int storeFileItems() {
   return currIndex;
 }
 
-//Swaps the key of the text map and returns the vector size which contains
-//the count of how many of those strings appear in the paragraph
+/*
+  Swaps the key of the text map with the replacement string
+
+  @Param: targetString -> The string to be replaced
+          replaceString -> The string that is going to be inserted
+
+  @Return: vector size which contains the count of how many of those strings
+           appear in the paragraph
+*/
 int swapMapKey(string targetString, string replaceString) {
   int replacementSize = textMap[targetString].size();
   textMap[replaceString] = textMap[targetString];
@@ -154,7 +186,11 @@ int swapMapKey(string targetString, string replaceString) {
   return replacementSize;
 }
 
-//Display the current paragraph
+/*
+  Displays the current paragraph
+
+  @Param: fileWordCount -> The total word count of the paragraph
+*/
 void displayParagraph(unsigned int fileWordCount) {
   //Create an array of size fileWordCount to store all the words in there
   string paragraph[fileWordCount];
