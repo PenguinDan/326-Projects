@@ -19,6 +19,7 @@
 #include <sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <math.h>
 #include <string>
 #include <signal.h>
 #include "semaphore.cpp"
@@ -46,7 +47,7 @@ void childWork(SEMAPHORE &sem, bool *sharedMemBuf);
 void parentCleanup(SEMAPHORE &sem, int sharedMemId);
 
 int main() {
-  int childIdArray{CHILD_COUNT};
+  int childIdArray[CHILD_COUNT];
   int childId = 0;
 
   //Create the Semaphores
